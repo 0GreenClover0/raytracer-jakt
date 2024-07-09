@@ -1,0 +1,5 @@
+import extern "AK/Math.h" {
+    namespace AK {
+        extern fn sqrt<T>(anon value: T) -> T
+    }
+}

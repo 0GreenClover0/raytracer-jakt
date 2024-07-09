@@ -1,0 +1,120 @@
+import math { AK }
+
+struct vec3 {
+    public x: f32
+    public y: f32
+    public z: f32
+
+    public fn create(anon x: f32 = 0.0, anon y: f32 = 0.0, anon z: f32 = 0.0) -> vec3 {
+        return vec3(x, y, z)
+    }
+
+    public fn create() -> vec3 {
+        return vec3(x: 0.0f32, y: 0.0f32, z: 0.0f32)
+    }
+
+    public fn negate(anon rhs: vec3) -> vec3 {
+        return vec3::create(-rhs.x, -rhs.y, -rhs.z)
+    }
+
+    public fn length(anon rhs: vec3) -> f32 {
+        return AK::sqrt(length_squared(rhs))
+    }
+
+    public fn length_squared(anon rhs: vec3) -> f32 {
+        return rhs.x * rhs.x + rhs.y * rhs.y + rhs.z * rhs.z
+    }
+
+    public fn dot(anon lhs: vec3, anon rhs: vec3) -> f32 {
+        return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
+    }
+
+    public fn cross(anon lhs: vec3, anon rhs: vec3) -> vec3 {
+        return vec3::create(
+            x: lhs.y * rhs.z - lhs.z * rhs.y,
+            y: lhs.z * rhs.x - lhs.x * rhs.z,
+            z: lhs.x * rhs.y - lhs.y * rhs.x
+        )
+    }
+
+    public fn normalize(anon rhs: vec3) -> vec3 {
+        // FIXME: rhs / length(rhs), but this breaks typechecker
+        let length = AK::sqrt(rhs.x * rhs.x + rhs.y * rhs.y + rhs.z * rhs.z)
+        return vec3::create(rhs.x / length, rhs.y / length, rhs.z / length)
+    }
+
+    public fn to_string(anon rhs: vec3) -> String {
+        return format("{} {} {}", rhs.x, rhs.y, rhs.z)
+    }
+}
+
+// vec3 operators
+
+type vec3 implements(Add<vec3, vec3>) {
+    fn add(this, anon rhs: vec3) -> vec3 {
+        return vec3::create(.x + rhs.x, .y + rhs.y, .z + rhs.z)
+    }
+}
+
+type vec3 implements(Subtract<vec3, vec3>) {
+    fn subtract(this, anon rhs: vec3) -> vec3 {
+        return vec3::create(.x - rhs.x, .y - rhs.y, .z - rhs.z)
+    }
+}
+
+type vec3 implements(Multiply<vec3, vec3>) {
+    fn multiply(this, anon rhs: vec3) -> vec3 {
+        return vec3::create(.x * rhs.x, .y * rhs.y, .z * rhs.z)
+    }
+}
+
+type vec3 implements(AddAssign<vec3>) {
+    fn add_assign(mut this, anon rhs: vec3) {
+        .x += rhs.x
+        .y += rhs.y
+        .z += rhs.z
+    }
+}
+
+type vec3 implements(SubtractAssign<vec3>) {
+    fn subtract_assign(mut this, anon rhs: vec3) {
+        .x -= rhs.x
+        .y -= rhs.y
+        .z -= rhs.z
+    }
+}
+
+// float operators
+
+type vec3 implements(Multiply<f32, vec3>) {
+    fn multiply(this, anon rhs: f32) -> vec3 {
+        return vec3::create(.x * rhs, .y * rhs, .z * rhs)
+    }
+}
+
+type f32 implements(Multiply<vec3, vec3>) {
+    [[inline(always)]]
+    fn multiply(this, anon rhs: vec3) -> vec3 {
+        return rhs * this
+    }
+}
+
+type vec3 implements(Divide<f32, vec3>) {
+    fn divide(this, anon rhs: f32) -> vec3 {
+        return (1.0f32 / rhs) * this
+    }
+}
+
+type vec3 implements(MultiplyAssign<f32>) {
+    fn multiply_assign(mut this, anon rhs: f32) {
+        .x *= rhs
+        .y *= rhs
+        .z *= rhs
+    }
+}
+
+type vec3 implements(DivideAssign<f32>) {
+    fn divide_assign(mut this, anon rhs: f32) {
+        this *= 1f32 / rhs
+    }
+}
