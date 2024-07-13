@@ -51,8 +51,21 @@ class Raytracer {
     }
 
     public fn ray_color(ray: &Ray) -> Vec3 {
+        if hit_sphere(center: &Vec3::create(0.0f32, 0.0f32, -1.0f32), radius: 0.5f32, ray) {
+            return Vec3::create(1.0f32, 0.0f32, 0.0f32)
+        }
+
         let unit_direction = Vec3::normalize(ray.direction())
         let a = 0.5f32 * (unit_direction.y + 1.0f32)
         return (1.0f32 - a) * Vec3::create(1.0f32, 1.0f32, 1.0f32) + a * Vec3::create(0.5f32, 0.7f32, 1.0f32)
+    }
+
+    public fn hit_sphere(center: &Vec3, radius: f32, ray: &Ray) -> bool {
+        let origin_center = center - ray.origin()
+        let a = Vec3::dot(ray.direction(), ray.direction())
+        let b = -2.0f32 * Vec3::dot(ray.direction(), origin_center)
+        let c = Vec3::dot(origin_center, origin_center) - radius * radius
+        let discriminant = b * b - 4.0f32 * a * c
+        return discriminant >= 0.0f32
     }
 }
