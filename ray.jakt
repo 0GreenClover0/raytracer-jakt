@@ -1,26 +1,26 @@
 import AK::vec3
 
-struct ray {
-    public fn create() -> ray {
-        return ray(m_origin: vec3::create(), m_direction: vec3::create())
+struct Ray {
+    public fn create() -> Ray {
+        return Ray(m_origin: Vec3::create(), m_direction: Vec3::create())
     }
 
-    public fn create(origin: &vec3, direction: &vec3) -> ray {
-        return ray(m_origin: *origin, m_direction: *direction)
+    public fn create(origin: &Vec3, direction: &Vec3) -> Ray {
+        return Ray(m_origin: *origin, m_direction: *direction)
     }
 
-    public fn origin(this) -> vec3 {
+    public fn origin(this) -> Vec3 {
         return .m_origin
     }
 
-    public fn direction(this) -> vec3 {
+    public fn direction(this) -> Vec3 {
         return .m_direction
     }
 
-    public fn at(this, time: f32) -> vec3 {
+    public fn at(this, time: f32) -> Vec3 {
         return .m_origin + time * .m_direction
     }
 
-    private m_origin: vec3
-    private m_direction: vec3
+    private m_origin: Vec3
+    private m_direction: Vec3
 }

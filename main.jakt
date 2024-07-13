@@ -1,5 +1,5 @@
 import raytracer
 
 fn main() {
-    raytracer::run()
+    Raytracer::run()
 }

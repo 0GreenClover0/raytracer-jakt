@@ -2,7 +2,7 @@ import AK::vec3
 import AK::color
 import ray
 
-class raytracer {
+class Raytracer {
     public fn run() {
 
         // Image
@@ -20,18 +20,18 @@ class raytracer {
         let focal_length = 1.0f32
         let viewport_height = 2.0f32
         let viewport_width = viewport_height * (image_width as! f32) / (image_height as! f32)
-        let camera_center = vec3::create()
+        let camera_center = Vec3::create()
 
         // Calculate the vectors across the horizontal and down the vertical viewport edges.
-        let viewport_u = vec3::create(viewport_width, 0.0f32, 0.0f32)
-        let viewport_v = vec3::create(0.0f32, -viewport_height, 0.0f32)
+        let viewport_u = Vec3::create(viewport_width, 0.0f32, 0.0f32)
+        let viewport_v = Vec3::create(0.0f32, -viewport_height, 0.0f32)
 
         // Calculate the horizontal and vertical delta vectors from pixel to pixel.
         let pixel_delta_u = viewport_u / (image_width as! f32)
         let pixel_delta_v = viewport_v / (image_height as! f32)
 
         // Calculate the location of the upper left pixel.
-        let viewport_upper_left = camera_center - vec3::create(0.0f32, 0.0f32, focal_length) - viewport_u / 2.0f32 - viewport_v / 2.0f32
+        let viewport_upper_left = camera_center - Vec3::create(0.0f32, 0.0f32, focal_length) - viewport_u / 2.0f32 - viewport_v / 2.0f32
         let pixel00_location = viewport_upper_left + 0.5f32 * (pixel_delta_u + pixel_delta_v)
 
         // Render
@@ -42,7 +42,7 @@ class raytracer {
             for i in 0..image_width {
                 let pixel_center = pixel00_location + (i as! f32 * pixel_delta_u) + (k as! f32 * pixel_delta_v)
                 let ray_direction = pixel_center - camera_center
-                let ray = ray::create(origin: &camera_center, direction: &ray_direction)
+                let ray = Ray::create(origin: &camera_center, direction: &ray_direction)
 
                 let pixel_color = ray_color(&ray)
                 write_color(&pixel_color)
@@ -50,9 +50,9 @@ class raytracer {
         }
     }
 
-    public fn ray_color(ray: &ray) -> vec3 {
-        let unit_direction = vec3::normalize(ray.direction())
+    public fn ray_color(ray: &Ray) -> Vec3 {
+        let unit_direction = Vec3::normalize(ray.direction())
         let a = 0.5f32 * (unit_direction.y + 1.0f32)
-        return (1.0f32 - a) * vec3::create(1.0f32, 1.0f32, 1.0f32) + a * vec3::create(0.5f32, 0.7f32, 1.0f32)
+        return (1.0f32 - a) * Vec3::create(1.0f32, 1.0f32, 1.0f32) + a * Vec3::create(0.5f32, 0.7f32, 1.0f32)
     }
 }
