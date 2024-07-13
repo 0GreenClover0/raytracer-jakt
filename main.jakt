@@ -1,16 +1,5 @@
-import AK::vec3
-import AK::color
+import raytracer
 
 fn main() {
-    let image_width = 256;
-    let image_height = 256;
-
-    print("P3\n{} {}\n255\n", image_width, image_height)
-
-    for k in 0..image_height {
-        for i in 0..image_width {
-            let pixel_color = vec3::create((i as! f32) / (image_width - 1) as! f32, (k as! f32) / (image_height - 1) as! f32, 0.0f32)
-            write_color(&pixel_color)
-        }
-    }
+    raytracer::run()
 }
