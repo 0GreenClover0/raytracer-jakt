@@ -2,6 +2,7 @@ import AK::color
 import AK::math { AK }
 import AK::vec3
 import ray
+import sphere
 
 class Raytracer {
     public fn run() {

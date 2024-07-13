@@ -1,0 +1,37 @@
+import AK::math { AK }
+import AK::vec3
+import hittable
+import ray
+
+class Sphere : Hittable {
+    public override fn hit(this, ray: &Ray, ray_tmin: f32, ray_tmax: f32, hit_record: &mut HitRecord) -> bool {
+        let origin_center = .m_center - ray.origin()
+        let a = Vec3::length_squared(ray.direction())
+        let h = Vec3::dot(ray.direction(), origin_center)
+        let c = Vec3::length_squared(origin_center) - .m_radius * .m_radius
+
+        let discriminant = h * h - a * c
+        if discriminant < 0.0f32 {
+            return false
+        }
+
+        let sqrtd = sqrt(discriminant)
+
+        // Find the nearest root that lies in the acceptable range.
+        mut root = (h - sqrtd) / a
+        if root <= ray_tmin or ray_tmax <= root {
+            root = (h + sqrtd) / a
+            if root <= ray_tmin or ray_tmax <= root {
+                return false
+            }
+        }
+
+        hit_record.t = root
+        hit_record.point = ray.at(time: hit_record.t)
+        hit_record.normal = (hit_record.point - .m_center) / .m_radius
+        return true
+    }
+
+    m_center: Vec3
+    m_radius: f32
+}
