@@ -1,6 +1,7 @@
 import AK::color
 import AK::math { AK }
 import AK::vec3
+import hittable_list
 import ray
 import sphere
 

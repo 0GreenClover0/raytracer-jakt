@@ -1,0 +1,39 @@
+import hittable
+import ray
+import AK::vec3
+
+class HittableList : Hittable {
+    public fn create() -> HittableList {
+        return HittableList(hittables: [])
+    }
+
+    public fn create(hittable: Hittable) -> HittableList {
+        return HittableList(hittables: [hittable])
+    }
+
+    public fn clear(mut this) {
+        .hittables = []
+    }
+
+    public fn add(mut this, hittable: Hittable) {
+        .hittables.push(hittable)
+    }
+
+    public override fn hit(this, ray: &Ray, ray_tmin: f32, ray_tmax: f32, hit_record: &mut HitRecord) -> bool {
+        mut temp_record = HitRecord(point: Vec3::create(0.0f32, 0.0f32, 0.0f32), normal: Vec3::create(0.0f32, 0.0f32, 0.0f32), t: 0.0f32, front_face: false)
+        mut hit_anything = false
+        mut closest_so_far = ray_tmax
+
+        for hittable in .hittables {
+            if hittable.hit(ray, ray_tmin, ray_tmax, hit_record: &mut temp_record) {
+                hit_anything = true
+                closest_so_far = temp_record.t
+                hit_record = temp_record
+            }
+        }
+
+        return hit_anything
+    }
+
+    public hittables: [Hittable]
+}
