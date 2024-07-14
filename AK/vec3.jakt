@@ -1,4 +1,4 @@
-import math { AK }
+import math
 
 struct Vec3 {
     public x: f32
@@ -18,7 +18,7 @@ struct Vec3 {
     }
 
     public fn length(anon rhs: Vec3) -> f32 {
-        return AK::sqrt(length_squared(rhs))
+        return math::AK::sqrt(length_squared(rhs))
     }
 
     public fn length_squared(anon rhs: Vec3) -> f32 {
@@ -39,8 +39,38 @@ struct Vec3 {
 
     public fn normalize(anon rhs: Vec3) -> Vec3 {
         // FIXME: rhs / length(rhs), but this breaks typechecker
-        let length = AK::sqrt(rhs.x * rhs.x + rhs.y * rhs.y + rhs.z * rhs.z)
+        let length = math::AK::sqrt(rhs.x * rhs.x + rhs.y * rhs.y + rhs.z * rhs.z)
         return Vec3::create(rhs.x / length, rhs.y / length, rhs.z / length)
+    }
+
+    public fn random() -> Vec3 {
+        return Vec3::create(random_float(), random_float(), random_float())
+    }
+
+    public fn random(min: f32, max: f32) -> Vec3 {
+        return Vec3::create(random_float(min, max), random_float(min, max), random_float(min, max))
+    }
+
+    public fn random_in_unit_sphere() -> Vec3 {
+        loop {
+            let p = random(min: -1.0f32, max: 1.0f32)
+            if Vec3::length_squared(p) < 1.0f32 {
+                return p
+            }
+        }
+    }
+
+    public fn random_unit_vector() -> Vec3 {
+        return normalize(random_in_unit_sphere())
+    }
+
+    public fn random_on_hemisphere(normal: &Vec3) -> Vec3 {
+        let on_unit_sphere = random_unit_vector()
+        if dot(on_unit_sphere, *normal) > 0.0f32 {
+            return on_unit_sphere
+        } else {
+            return negate(on_unit_sphere)
+        }
     }
 
     public fn to_string(anon rhs: Vec3) -> String {
