@@ -8,5 +8,10 @@ import extern "AK/NumericLimits.h" {
             fn min_normal() -> f32
             fn max() -> f32
         }
+
+        extern struct NumericLimist<u32> {
+            fn min() -> u32
+            fn max() -> u32
+        }
     }
 }
