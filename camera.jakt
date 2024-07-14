@@ -85,7 +85,8 @@ class Camera {
     private fn ray_color(ray: &Ray, world: &Hittable) -> Vec3 {
         mut hit_record = HitRecord::create()
         if world.hit(ray, ray_t: Interval::create(min: 0.0f32, max: math_constants::AK::NumericLimits::max()), &mut hit_record) {
-            return 0.5f32 * (hit_record.normal + Vec3::create(1.0f32, 1.0f32, 1.0f32)) 
+            let direction = Vec3::random_on_hemisphere(normal: &hit_record.normal)
+            return 0.5f32 * ray_color(ray: &Ray::create(origin: &hit_record.point, &direction), depth: depth - 1, world)
         }
 
         let unit_direction = Vec3::normalize(ray.direction())
