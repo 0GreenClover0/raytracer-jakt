@@ -5,6 +5,17 @@ struct HitRecord {
     point: Vec3
     normal: Vec3
     t: f32
+    front_face: bool
+
+    fn set_face_normal(mut this, ray: &Ray, outward_normal: &Vec3) {
+        // Sets the hit record normal vector.
+        // NOTE: the parameter `outward_normal` is assumed to have unit length.
+        .front_face = Vec3::dot(ray.direction(), *outward_normal) < 0.0f32
+        .normal = match .front_face {
+            true => *outward_normal
+            false => Vec3::negate(*outward_normal)
+        }
+    }
 }
 
 class Hittable {

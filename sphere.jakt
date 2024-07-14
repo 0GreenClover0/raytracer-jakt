@@ -28,7 +28,8 @@ class Sphere : Hittable {
 
         hit_record.t = root
         hit_record.point = ray.at(time: hit_record.t)
-        hit_record.normal = (hit_record.point - .m_center) / .m_radius
+        let outward_normal = (hit_record.point - .m_center) / .m_radius
+        hit_record.set_face_normal(ray, &outward_normal)
         return true
     }
 
