@@ -1,0 +1,12 @@
+fn pi() -> f32 {
+    return 3.1415926535897932385f32
+}
+
+import extern "AK/NumericLimits.h" {
+    namespace AK {
+        extern struct NumericLimits<f32> {
+            fn min_normal() -> f32
+            fn max() -> f32
+        }
+    }
+}

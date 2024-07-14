@@ -1,5 +1,11 @@
+import math_constants
+
 import extern "AK/Math.h" {
     namespace AK {
         extern fn sqrt<T>(anon value: T) -> T
     }
+}
+
+fn radians(degrees: f32) -> f32 {
+    return degrees * pi() / 180.0f32
 }

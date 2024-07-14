@@ -7,6 +7,10 @@ struct HitRecord {
     t: f32
     front_face: bool
 
+    fn create() -> HitRecord {
+        return HitRecord(point: Vec3::create(0.0f32, 0.0f32, 0.0f32), normal: Vec3::create(0.0f32, 0.0f32, 0.0f32), t: 0.0f32, front_face: false)
+    }
+
     fn set_face_normal(mut this, ray: &Ray, outward_normal: &Vec3) {
         // Sets the hit record normal vector.
         // NOTE: the parameter `outward_normal` is assumed to have unit length.
