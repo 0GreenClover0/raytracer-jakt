@@ -12,6 +12,7 @@ class Camera {
     public aspect_ratio: f32 = 1.0f32
     public image_width: i64 = 100
     public samples_per_pixel: i64
+    public max_depth: i64
 
     private m_image_height: i64
     private m_pixel_samples_scale: f32
@@ -20,11 +21,12 @@ class Camera {
     private m_pixel_delta_u: Vec3 // Offset to pixel to the right
     private m_pixel_delta_v: Vec3 // Offset to pixel below
 
-    public fn create(aspect_ratio: f32, image_width: i64, samples_per_pixel: i64) -> Camera {
+    public fn create(aspect_ratio: f32, image_width: i64, samples_per_pixel: i64, max_depth: i64) -> Camera {
         return Camera(
             aspect_ratio,
             image_width,
             samples_per_pixel,
+            max_depth,
             m_image_height: 0,
             m_pixel_samples_scale: 0.0f32,
             m_center: Vec3::create(),
@@ -45,7 +47,7 @@ class Camera {
 
                 for sample in 0...samples_per_pixel {
                     let ray = .get_ray(i, k)
-                    pixel_color += ray_color(&ray, &world)
+                    pixel_color += ray_color(&ray, depth: .max_depth, &world)
                 }
 
                 write_color(pixel_color: &(.m_pixel_samples_scale * &pixel_color))
@@ -82,7 +84,11 @@ class Camera {
         .m_pixel00_location = viewport_upper_left + 0.5f32 * (.m_pixel_delta_u + .m_pixel_delta_v)
     }
 
-    private fn ray_color(ray: &Ray, world: &Hittable) -> Vec3 {
+    private fn ray_color(ray: &Ray, depth: i64, world: &Hittable) -> Vec3 {
+        if depth <= 0 {
+            return Vec3::create()
+        }
+
         mut hit_record = HitRecord::create()
         if world.hit(ray, ray_t: Interval::create(min: 0.0f32, max: math_constants::AK::NumericLimits::max()), &mut hit_record) {
             let direction = Vec3::random_on_hemisphere(normal: &hit_record.normal)
