@@ -1,88 +1,19 @@
-import AK::color
-import AK::interval
 import AK::math { AK }
 import AK::math_constants
 import AK::vec3
+import camera
 import hittable
 import hittable_list
-import ray
 import sphere
 
 class Raytracer {
     public fn run() {
-
-        // Image
-        let aspect_ratio = 16.0f32 / 9.0f32
-        let image_width = 400
-
-        // Calculate the image height, and ensure that it's at least 1.
-        mut image_height = (image_width as! f32 / aspect_ratio) as! i64
-        if image_height < 1 {
-            image_height = 1
-        }
-
-        // Camera
-
-        let focal_length = 1.0f32
-        let viewport_height = 2.0f32
-        let viewport_width = viewport_height * (image_width as! f32) / (image_height as! f32)
-        let camera_center = Vec3::create()
-
-        // Calculate the vectors across the horizontal and down the vertical viewport edges.
-        let viewport_u = Vec3::create(viewport_width, 0.0f32, 0.0f32)
-        let viewport_v = Vec3::create(0.0f32, -viewport_height, 0.0f32)
-
-        // Calculate the horizontal and vertical delta vectors from pixel to pixel.
-        let pixel_delta_u = viewport_u / (image_width as! f32)
-        let pixel_delta_v = viewport_v / (image_height as! f32)
-
-        // Calculate the location of the upper left pixel.
-        let viewport_upper_left = camera_center - Vec3::create(0.0f32, 0.0f32, focal_length) - viewport_u / 2.0f32 - viewport_v / 2.0f32
-        let pixel00_location = viewport_upper_left + 0.5f32 * (pixel_delta_u + pixel_delta_v)
-
         // World
         mut world = HittableList::create()
         world.add(hittable: Sphere::create(center: Vec3::create(0.0f32, -100.5f32, -1.0f32), radius: 100f32))
         world.add(hittable: Sphere::create(center: Vec3::create(0.0f32, 0.0f32, -1.0f32), radius: 0.5f32))
 
-        // Render
-
-        print("P3\n{} {}\n255\n", image_width, image_height)
-
-        for k in 0..image_height {
-            for i in 0..image_width {
-                let pixel_center = pixel00_location + (i as! f32 * pixel_delta_u) + (k as! f32 * pixel_delta_v)
-                let ray_direction = pixel_center - camera_center
-                let ray = Ray::create(origin: &camera_center, direction: &ray_direction)
-
-                let pixel_color = ray_color(&ray, &world)
-                write_color(&pixel_color)
-            }
-        }
-    }
-
-    public fn ray_color(ray: &Ray, world: &HittableList) -> Vec3 {
-        mut hit_record = HitRecord::create()
-        if world.hit(ray, ray_t: Interval::create(min: 0.0f32, max: math_constants::AK::NumericLimits::max()), &mut hit_record) {
-            return 0.5f32 * (hit_record.normal + Vec3::create(1.0f32, 1.0f32, 1.0f32)) 
-        }
-
-        let unit_direction = Vec3::normalize(ray.direction())
-        let a = 0.5f32 * (unit_direction.y + 1.0f32)
-        return (1.0f32 - a) * Vec3::create(1.0f32, 1.0f32, 1.0f32) + a * Vec3::create(0.5f32, 0.7f32, 1.0f32)
-    }
-
-    public fn hit_sphere(center: &Vec3, radius: f32, ray: &Ray) -> f32 {
-        let origin_center = center - ray.origin()
-        let a = Vec3::length_squared(ray.direction())
-        let h = Vec3::dot(ray.direction(), origin_center)
-        let c = Vec3::length_squared(origin_center) - radius * radius
-        let discriminant = h * h - a * c
-
-        if discriminant < 0.0f32 {
-            return -1.0f32
-        } else {
-            return (h - sqrt(discriminant)) / a
-        }
+        mut camera = Camera::create(aspect_ratio: 16.0f32 / 9.0f32, image_width: 400)
+        camera.render(&world)
     }
 }
