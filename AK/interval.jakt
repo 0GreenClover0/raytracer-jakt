@@ -1,0 +1,34 @@
+import math_constants
+
+class Interval {
+    public min: f32
+    public max: f32
+
+    public fn create() -> Interval {
+        return empty()
+    }
+
+    public fn create(min: f32, max: f32) -> Interval {
+        return Interval(min, max)
+    }
+
+    public fn size(this) -> f32 {
+        return .max - .min
+    }
+
+    public fn contains(this, anon x: f32) -> bool {
+        return .min <= x and x <= .max
+    }
+
+    public fn surrounds(this, anon x: f32) -> bool {
+        return .min < x and x < .max
+    }
+
+    public fn empty() -> Interval {
+        return Interval(min: math_constants::AK::NumericLimits::max(), max: math_constants::AK::NumericLimits::min_normal())
+    }
+
+    public fn whole() -> Interval {
+        return Interval(min: math_constants::AK::NumericLimits::min_normal(), max: math_constants::AK::NumericLimits::max())
+    }
+}

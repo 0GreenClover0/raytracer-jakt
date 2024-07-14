@@ -1,4 +1,5 @@
 import AK::color
+import AK::interval
 import AK::math { AK }
 import AK::math_constants
 import AK::vec3
@@ -62,7 +63,7 @@ class Raytracer {
 
     public fn ray_color(ray: &Ray, world: &HittableList) -> Vec3 {
         mut hit_record = HitRecord::create()
-        if world.hit(ray, ray_tmin: 0.0f32, ray_tmax: math_constants::AK::NumericLimits::max(), &mut hit_record) {
+        if world.hit(ray, ray_t: Interval::create(min: 0.0f32, max: math_constants::AK::NumericLimits::max()), &mut hit_record) {
             return 0.5f32 * (hit_record.normal + Vec3::create(1.0f32, 1.0f32, 1.0f32)) 
         }
 

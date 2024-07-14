@@ -1,3 +1,4 @@
+import AK::interval
 import AK::vec3
 import ray
 
@@ -24,7 +25,7 @@ struct HitRecord {
 
 class Hittable {
     // FIXME: This method should be pure virtual
-    public virtual fn hit(this, ray: &Ray, ray_tmin: f32, ray_tmax: f32, hit_record: &mut HitRecord) -> bool {
+    public virtual fn hit(this, ray: &Ray, ray_t: Interval, hit_record: &mut HitRecord) -> bool {
         return false
     }
 }

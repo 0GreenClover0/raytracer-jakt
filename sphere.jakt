@@ -1,3 +1,4 @@
+import AK::interval
 import AK::math { AK }
 import AK::vec3
 import hittable
@@ -8,7 +9,7 @@ class Sphere : Hittable {
         return Sphere(m_center: center, m_radius: radius)
     }
 
-    public override fn hit(this, ray: &Ray, ray_tmin: f32, ray_tmax: f32, hit_record: &mut HitRecord) -> bool {
+    public override fn hit(this, ray: &Ray, ray_t: Interval, hit_record: &mut HitRecord) -> bool {
         let origin_center = .m_center - ray.origin()
         let a = Vec3::length_squared(ray.direction())
         let h = Vec3::dot(ray.direction(), origin_center)
@@ -23,9 +24,9 @@ class Sphere : Hittable {
 
         // Find the nearest root that lies in the acceptable range.
         mut root = (h - sqrtd) / a
-        if root <= ray_tmin or ray_tmax <= root {
+        if not ray_t.surrounds(root) {
             root = (h + sqrtd) / a
-            if root <= ray_tmin or ray_tmax <= root {
+            if not ray_t.surrounds(root) {
                 return false
             }
         }
