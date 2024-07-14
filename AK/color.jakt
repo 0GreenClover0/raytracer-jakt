@@ -1,10 +1,22 @@
 import math
 import vec3
 
+fn linear_to_gamma(linear_component: f32) -> f32 {
+    if linear_component > 0.0f32 {
+        return math::AK::sqrt(linear_component)
+    }
+
+    return 0.0f32
+}
+
 fn write_color(pixel_color: &Vec3) {
-    let r = pixel_color.x
-    let g = pixel_color.y
-    let b = pixel_color.z
+    mut r = pixel_color.x
+    mut g = pixel_color.y
+    mut b = pixel_color.z
+
+    r = linear_to_gamma(linear_component: r)
+    g = linear_to_gamma(linear_component: g)
+    b = linear_to_gamma(linear_component: b)
 
     let rbyte = (256.0f32 * math::clamp(value: r, min: 0.0f32, max: 0.999f32)) as! i32
     let gbyte = (256.0f32 * math::clamp(value: g, min: 0.0f32, max: 0.999f32)) as! i32
