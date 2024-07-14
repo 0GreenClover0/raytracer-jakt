@@ -13,7 +13,7 @@ class Raytracer {
         world.add(hittable: Sphere::create(center: Vec3::create(0.0f32, -100.5f32, -1.0f32), radius: 100f32))
         world.add(hittable: Sphere::create(center: Vec3::create(0.0f32, 0.0f32, -1.0f32), radius: 0.5f32))
 
-        mut camera = Camera::create(aspect_ratio: 16.0f32 / 9.0f32, image_width: 400)
+        mut camera = Camera::create(aspect_ratio: 16.0f32 / 9.0f32, image_width: 400, samples_per_pixel: 100)
         camera.render(&world)
     }
 }

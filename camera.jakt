@@ -1,7 +1,7 @@
 
 import AK::color
 import AK::interval
-import AK::math { AK }
+import AK::math
 import AK::math_constants
 import AK::vec3
 import hittable
@@ -11,18 +11,22 @@ import ray
 class Camera {
     public aspect_ratio: f32 = 1.0f32
     public image_width: i64 = 100
+    public samples_per_pixel: i64
 
     private m_image_height: i64
+    private m_pixel_samples_scale: f32
     private m_center: Vec3
     private m_pixel00_location: Vec3
     private m_pixel_delta_u: Vec3 // Offset to pixel to the right
     private m_pixel_delta_v: Vec3 // Offset to pixel below
 
-    public fn create(aspect_ratio: f32, image_width: i64) -> Camera {
+    public fn create(aspect_ratio: f32, image_width: i64, samples_per_pixel: i64) -> Camera {
         return Camera(
             aspect_ratio,
             image_width,
+            samples_per_pixel,
             m_image_height: 0,
+            m_pixel_samples_scale: 0.0f32,
             m_center: Vec3::create(),
             m_pixel00_location: Vec3::create()
             m_pixel_delta_u: Vec3::create()
@@ -37,12 +41,14 @@ class Camera {
 
         for k in 0...m_image_height {
             for i in 0...image_width {
-                let pixel_center = .m_pixel00_location + (i as! f32 * .m_pixel_delta_u) + (k as! f32 * .m_pixel_delta_v)
-                let ray_direction = pixel_center - .m_center
-                let ray = Ray::create(origin: &.m_center, direction: &ray_direction)
+                mut pixel_color = Vec3::create()
 
-                let pixel_color = ray_color(&ray, &world)
-                write_color(&pixel_color)
+                for sample in 0...samples_per_pixel {
+                    let ray = .get_ray(i, k)
+                    pixel_color += ray_color(&ray, &world)
+                }
+
+                write_color(pixel_color: &(.m_pixel_samples_scale * &pixel_color))
             }
         }
     }
@@ -53,6 +59,8 @@ class Camera {
         if .m_image_height < 1 {
             .m_image_height = 1
         }
+
+        .m_pixel_samples_scale = 1.0f32 / (.samples_per_pixel as! f32)
 
         // Camera
         .m_center = Vec3::create()
@@ -83,5 +91,21 @@ class Camera {
         let unit_direction = Vec3::normalize(ray.direction())
         let a = 0.5f32 * (unit_direction.y + 1.0f32)
         return (1.0f32 - a) * Vec3::create(1.0f32, 1.0f32, 1.0f32) + a * Vec3::create(0.5f32, 0.7f32, 1.0f32)
+    }
+
+    private fn get_ray(this, anon i: i64, anon k: i64) -> Ray {
+        // Construct a camera ray originating from the origin and directed at randomly sampled
+        // point around the pixel location i, k.
+        let offset = sample_square()
+        let pixel_sample = .m_pixel00_location + ((i as! f32 + offset.x) * .m_pixel_delta_u) + ((k as! f32 + offset.y) * .m_pixel_delta_v)
+        let ray_origin = .m_center
+        let ray_direction = pixel_sample - ray_origin
+
+        return Ray::create(origin: &ray_origin, direction: &ray_direction)
+    }
+
+    private fn sample_square() -> Vec3 {
+        // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit square.
+        return Vec3::create(math::random_float() - 0.5f32, math::random_float() - 0.5f32, 0.0f32)
     }
 }
