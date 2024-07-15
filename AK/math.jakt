@@ -8,6 +8,11 @@ import extern "AK/Math.h" {
     extern fn fabs<T>(anon value: T) -> T
 }
 
+import extern "AK/StdLibExtras.h" {
+    extern fn min<T>(anon a: &T, anon b: &T) -> T
+    extern fn max<T>(anon a: &T, anon b: &T) -> T
+}
+
 fn radians(degrees: f32) -> f32 {
     return degrees * pi() / 180.0f32
 }

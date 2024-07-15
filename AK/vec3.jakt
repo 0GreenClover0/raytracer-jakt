@@ -83,6 +83,13 @@ struct Vec3 {
         return v - 2.0f32 * dot(*v, *n) * n
     }
 
+    public fn refract(anon uv: &Vec3, anon n: &Vec3, etai_over_etat: f32) -> Vec3 {
+        let cos_theta = math::min(&dot(negate(*uv), *n), &1.0f32)
+        let r_out_perp = etai_over_etat * (uv + cos_theta * n)
+        let r_out_parallel = -math::AK::sqrt(math::fabs(1.0f32 - length_squared(r_out_perp))) * n
+        return r_out_perp + r_out_parallel
+    }
+
     public fn to_string(anon rhs: Vec3) -> String {
         return format("{} {} {}", rhs.x, rhs.y, rhs.z)
     }
