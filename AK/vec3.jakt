@@ -51,6 +51,12 @@ struct Vec3 {
         return Vec3::create(random_float(min, max), random_float(min, max), random_float(min, max))
     }
 
+    public fn near_zero(anon rhs: Vec3) -> bool {
+        let epsilon = 0.0000001f32
+
+        return math::fabs(rhs.x) < epsilon and math::fabs(rhs.y) < epsilon and math::fabs(rhs.z) < epsilon
+    }
+
     public fn random_in_unit_sphere() -> Vec3 {
         loop {
             let p = random(min: -1.0f32, max: 1.0f32)
@@ -71,6 +77,10 @@ struct Vec3 {
         } else {
             return negate(on_unit_sphere)
         }
+    }
+
+    public fn reflect_v(anon v: &Vec3, anon n: &Vec3) -> Vec3 {
+        return v - 2.0f32 * dot(*v, *n) * n
     }
 
     public fn to_string(anon rhs: Vec3) -> String {

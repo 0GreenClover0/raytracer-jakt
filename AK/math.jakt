@@ -4,6 +4,8 @@ import extern "AK/Math.h" {
     namespace AK {
         extern fn sqrt<T>(anon value: T) -> T
     }
+
+    extern fn fabs<T>(anon value: T) -> T
 }
 
 fn radians(degrees: f32) -> f32 {
