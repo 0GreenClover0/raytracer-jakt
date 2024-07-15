@@ -1,4 +1,5 @@
 import AK::interval
+import AK::math
 import AK::vec3
 import ray
 
@@ -76,5 +77,37 @@ class Metal : Material {
         scattered = Ray::create(origin: &hit_record.point, direction: &reflected)
         attenuation = .m_albedo
         return (Vec3::dot(scattered.direction(), hit_record.normal) > 0.0f32)
+    }
+}
+
+class Dielectric : Material {
+    private m_refraction_index: f32
+
+    public fn create(refraction_index: f32) -> Dielectric {
+        return Dielectric(m_refraction_index: refraction_index)
+    }
+
+    public override fn scatter(this, ray_in: &Ray, hit_record: &HitRecord, attenuation: &mut Vec3, scattered: &mut Ray) -> bool {
+        attenuation = Vec3::create(1.0f32, 1.0f32, 1.0f32)
+        let ri = match hit_record.front_face {
+            true => (1.0f32 / .m_refraction_index)
+            false => .m_refraction_index
+        }
+
+        let unit_direction = Vec3::normalize(ray_in.direction())
+        let cos_theta = math::min(&Vec3::dot(Vec3::negate(unit_direction), hit_record.normal), &1.0f32)
+        let sin_theta = math::AK::sqrt(1.0f32 - cos_theta * cos_theta)
+
+        let cannot_refract = ri * sin_theta > 1.0f32
+        mut direction = Vec3::create()
+
+        if cannot_refract {
+            direction = Vec3::reflect_v(&unit_direction, &hit_record.normal)
+        } else {
+            direction = Vec3::refract(&unit_direction, &hit_record.normal, etai_over_etat: ri)
+        }
+
+        scattered = Ray::create(origin: &hit_record.point, &direction)
+        return true
     }
 }
