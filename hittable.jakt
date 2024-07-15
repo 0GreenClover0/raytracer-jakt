@@ -101,7 +101,7 @@ class Dielectric : Material {
         let cannot_refract = ri * sin_theta > 1.0f32
         mut direction = Vec3::create()
 
-        if cannot_refract {
+        if cannot_refract or reflectance(cosine: cos_theta, refraction_index: ri) > math::random_float() {
             direction = Vec3::reflect_v(&unit_direction, &hit_record.normal)
         } else {
             direction = Vec3::refract(&unit_direction, &hit_record.normal, etai_over_etat: ri)
@@ -109,5 +109,12 @@ class Dielectric : Material {
 
         scattered = Ray::create(origin: &hit_record.point, &direction)
         return true
+    }
+
+    private fn reflectance(cosine: f32, refraction_index: f32) -> f32 {
+        // Use Schlick's approximation for reflectance.
+        mut r0 = (1.0f32 - refraction_index) / (1.0f32 + refraction_index)
+        r0 = r0 * r0
+        return r0 + (1.0f32 - r0) * math::pow((1.0f32 - cosine), 5.0f32)
     }
 }
