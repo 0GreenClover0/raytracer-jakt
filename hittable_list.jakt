@@ -26,7 +26,7 @@ class HittableList : Hittable {
         mut closest_so_far = ray_t.max
 
         for hittable in .hittables {
-            if hittable.hit(ray, ray_t, hit_record: &mut temp_record) {
+            if hittable.hit(ray, ray_t: Interval::create(min: ray_t.min, max: closest_so_far), hit_record: &mut temp_record) {
                 hit_anything = true
                 closest_so_far = temp_record.t
                 hit_record = temp_record
