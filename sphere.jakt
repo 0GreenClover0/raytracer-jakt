@@ -5,8 +5,8 @@ import hittable
 import ray
 
 class Sphere : Hittable {
-    public fn create(center: Vec3, radius: f32) -> Sphere {
-        return Sphere(m_center: center, m_radius: radius)
+    public fn create(center: Vec3, radius: f32, material: &Material) -> Sphere {
+        return Sphere(m_center: center, m_radius: radius, m_material: *material)
     }
 
     public override fn hit(this, ray: &Ray, ray_t: Interval, hit_record: &mut HitRecord) -> bool {
@@ -35,9 +35,11 @@ class Sphere : Hittable {
         hit_record.point = ray.at(time: hit_record.t)
         let outward_normal = (hit_record.point - .m_center) / .m_radius
         hit_record.set_face_normal(ray, &outward_normal)
+        hit_record.material = .m_material
         return true
     }
 
     m_center: Vec3
     m_radius: f32
+    m_material: Material
 }

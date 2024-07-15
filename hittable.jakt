@@ -5,6 +5,7 @@ import ray
 struct HitRecord {
     point: Vec3
     normal: Vec3
+    material: Material? = None
     t: f32
     front_face: bool
 
@@ -27,5 +28,47 @@ class Hittable {
     // FIXME: This method should be pure virtual
     public virtual fn hit(this, ray: &Ray, ray_t: Interval, hit_record: &mut HitRecord) -> bool {
         return false
+    }
+}
+
+class Material {
+    public virtual fn scatter(this, ray_in: &Ray, hit_record: &HitRecord, attenuation: &mut Vec3, scattered: &mut Ray) -> bool {
+        return false
+    }
+}
+
+class Lambertian : Material {
+    private m_albedo: Vec3
+
+    public fn create(albedo: &Vec3) -> Lambertian {
+        return Lambertian(m_albedo: *albedo)
+    }
+
+    public override fn scatter(this, ray_in: &Ray, hit_record: &HitRecord, attenuation: &mut Vec3, scattered: &mut Ray) -> bool {
+        mut scatter_direction = hit_record.normal + Vec3::random_unit_vector()
+
+        // Catch degenerate scatter direction
+        if Vec3::near_zero(scatter_direction) {
+            scatter_direction = hit_record.normal
+        }
+
+        scattered = Ray::create(origin: &hit_record.point, direction: &scatter_direction)
+        attenuation = .m_albedo
+        return true
+    }
+}
+
+class Metal : Material {
+    private m_albedo: Vec3
+
+    public fn create(albedo: &Vec3) -> Metal {
+        return Metal(m_albedo: *albedo)
+    }
+
+    public override fn scatter(this, ray_in: &Ray, hit_record: &HitRecord, attenuation: &mut Vec3, scattered: &mut Ray) -> bool {
+        let reflected = Vec3::reflect_v(&ray_in.direction(), &hit_record.normal)
+        scattered = Ray::create(origin: &hit_record.point, direction: &reflected)
+        attenuation = .m_albedo
+        return true
     }
 }
