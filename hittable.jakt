@@ -60,15 +60,21 @@ class Lambertian : Material {
 
 class Metal : Material {
     private m_albedo: Vec3
+    private m_fuzz: f32
 
-    public fn create(albedo: &Vec3) -> Metal {
-        return Metal(m_albedo: *albedo)
+    public fn create(albedo: &Vec3, fuzz: f32) -> Metal {
+        let clamped = match fuzz < 1.0f32 {
+            true => fuzz
+            false => 1.0f32
+        }
+        return Metal(m_albedo: *albedo, m_fuzz: clamped)
     }
 
     public override fn scatter(this, ray_in: &Ray, hit_record: &HitRecord, attenuation: &mut Vec3, scattered: &mut Ray) -> bool {
-        let reflected = Vec3::reflect_v(&ray_in.direction(), &hit_record.normal)
+        mut reflected = Vec3::reflect_v(&ray_in.direction(), &hit_record.normal)
+        reflected = Vec3::normalize(reflected) + (.m_fuzz * Vec3::random_unit_vector())
         scattered = Ray::create(origin: &hit_record.point, direction: &reflected)
         attenuation = .m_albedo
-        return true
+        return (Vec3::dot(scattered.direction(), hit_record.normal) > 0.0f32)
     }
 }
