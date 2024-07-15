@@ -11,29 +11,54 @@ class Raytracer {
         // World
         mut world = HittableList::create()
 
-        // let material_left = Lambertian::create(albedo: &Vec3::create(0.0f32, 0.0f32, 1.0f32))
-        // let material_right = Lambertian::create(albedo: &Vec3::create(1.0f32, 0.0f32, 0.0f32))
+        let ground_material = Lambertian::create(albedo: &Vec3::create(0.5f32, 0.5f32, 0.5f32))
+        world.add(hittable: Sphere::create(center: Vec3::create(0.0f32, -1000.0f32, 0.0f32), radius: 1000.0f32, material: &ground_material))
 
-        // let R = math::cos(math_constants::pi() / 4.0f32)
-        // world.add(hittable: Sphere::create(center: Vec3::create(-R, 0.0f32, -1.0f32), radius: R, material: &material_left))
-        // world.add(hittable: Sphere::create(center: Vec3::create(R, 0.0f32, -1.0f32), radius: R, material: &material_right))
+        for a in (-11)..11 {
+            for b in (-11)..11 {
+                let choose_mat = random_float()
+                let center = Vec3::create(
+                    (a as! f32) + 0.9f32 * random_float(),
+                    0.2f32,
+                    (b as! f32) + 0.9f32 * random_float()
+                )
 
-        let material_ground = Lambertian::create(albedo: &Vec3::create(0.8f32, 0.8f32, 0.0f32))
-        let material_center = Lambertian::create(albedo: &Vec3::create(0.1f32, 0.2f32, 0.5f32))
-        let material_left = Dielectric::create(refraction_index: 1.5f32)
-        let material_bubble = Dielectric::create(refraction_index: 1.0f32 / 1.5f32)
-        let material_right = Metal::create(albedo: &Vec3::create(0.8f32, 0.6f32, 0.2f32), fuzz: 1.0f32)
+                if Vec3::length(center - Vec3::create(4.0f32, 0.2f32, 0.0f32)) > 0.9f32 {
+                    mut sphere_material: Material? = None
 
-        world.add(hittable: Sphere::create(center: Vec3::create(0.0f32, -100.5f32, -1.0f32), radius: 100f32, material: &material_ground))
-        world.add(hittable: Sphere::create(center: Vec3::create(0.0f32, 0.0f32, -1.2f32), radius: 0.5f32, material: &material_center))
-        world.add(hittable: Sphere::create(center: Vec3::create(-1.0f32, 0.0f32, -1.0f32), radius: 0.5f32, material: &material_left))
-        world.add(hittable: Sphere::create(center: Vec3::create(-1.0f32, 0.0f32, -1.0f32), radius: 0.4f32, material: &material_bubble))
-        world.add(hittable: Sphere::create(center: Vec3::create(1.0f32, 0.0f32, -1.0f32), radius: 0.5f32, material: &material_right))
+                    if choose_mat < 0.8f32 {
+                        // diffuse
+                        let albedo = Vec3::random() * Vec3::random()
+                        sphere_material = Lambertian::create(albedo: &albedo)
+                        world.add(hittable: Sphere::create(center: center, radius: 0.2f32, material: &sphere_material!))
+                    } else if choose_mat < 0.95f32 {
+                        // metal
+                        let albedo = Vec3::random(min: 0.5f32, max: 1.0f32)
+                        let fuzz = random_float(min: 0.0f32, max: 0.5f32)
+                        sphere_material = Metal::create(albedo: &albedo, fuzz: fuzz)
+                        world.add(hittable: Sphere::create(center: center, radius: 0.2f32, material: &sphere_material!))
+                    } else {
+                        // glass
+                        sphere_material = Dielectric::create(refraction_index: 1.5f32)
+                        world.add(hittable: Sphere::create(center: center, radius: 0.2f32, material: &sphere_material!))
+                    }
+                }
+            }
+        }
 
-        mut camera = Camera::create(aspect_ratio: 16.0f32 / 9.0f32, image_width: 400, samples_per_pixel: 100, max_depth: 50)
+        let material1 = Dielectric::create(refraction_index: 1.5f32)
+        world.add(hittable: Sphere::create(center: Vec3::create(0.0f32, 1.0f32, 0.0f32), radius: 1.0f32, material: &material1))
+
+        let material2 = Lambertian::create(albedo: &Vec3::create(0.4f32, 0.2f32, 0.1f32))
+        world.add(hittable: Sphere::create(center: Vec3::create(-4.0f32, 1.0f32, 0.0f32), radius: 1.0f32, material: &material2))
+
+        let material3 = Metal::create(albedo: &Vec3::create(0.7f32, 0.6f32, 0.5f32), fuzz: 0.0f32)
+        world.add(hittable: Sphere::create(center: Vec3::create(4.0f32, 1.0f32, 0.0f32), radius: 1.0f32, material: &material3))
+
+        mut camera = Camera::create(aspect_ratio: 16.0f32 / 9.0f32, image_width: 1200, samples_per_pixel: 100, max_depth: 50)
         camera.vertical_fov = 20.0f32
-        camera.look_from = Vec3::create(-2.0f32, 2.0f32, 1.0f32)
-        camera.look_at = Vec3::create(0.0f32, 0.0f32, -1.0f32)
+        camera.look_from = Vec3::create(13.0f32, 2.0f32, 3.0f32)
+        camera.look_at = Vec3::create(0.0f32, 0.0f32, 0.0f32)
         camera.v_up = Vec3::create(0.0f32, 1.0f32, 0.0f32)
         camera.render(&world)
     }
