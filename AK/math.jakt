@@ -8,6 +8,9 @@ import extern "AK/Math.h" {
     extern fn fabs<T>(anon value: T) -> T
 
     extern fn pow<T>(anon x: T, anon y: T) -> T
+
+    extern fn cos<T>(anon x: T) -> T
+    extern fn tan<T>(anon x: T) -> T
 }
 
 import extern "AK/StdLibExtras.h" {
