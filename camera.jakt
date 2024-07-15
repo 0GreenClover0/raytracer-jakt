@@ -13,6 +13,7 @@ class Camera {
     public image_width: i64 = 100
     public samples_per_pixel: i64
     public max_depth: i64
+    public vertical_fov: f32 = 90.0f32
 
     private m_image_height: i64
     private m_pixel_samples_scale: f32
@@ -68,7 +69,9 @@ class Camera {
         .m_center = Vec3::create()
 
         let focal_length = 1.0f32
-        let viewport_height = 2.0f32
+        let theta = math::radians(degrees: .vertical_fov)
+        let h = math::tan(theta / 2.0f32)
+        let viewport_height = 2.0f32 * h * focal_length
         let viewport_width = viewport_height * (.image_width as! f32) / (.m_image_height as! f32)
 
         // Calculate the vectors across the horizontal and down the vertical viewport edges.
